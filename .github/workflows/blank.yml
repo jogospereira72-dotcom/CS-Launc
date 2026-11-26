@@ -1,0 +1,43 @@
+name: Build FF Panel arm64
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK r25c
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r25c
+          add-to-path: true
+
+      - name: Compilar ff_panel para arm64
+        run: |
+          TOOLCHAIN="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64"
+          CXX="$TOOLCHAIN/bin/aarch64-linux-android21-clang++"
+          $CXX \
+            -std=c++17 \
+            -O2 \
+            -Wno-unused-variable \
+            -fvisibility=hidden \
+            -DANDROID \
+            -D__ANDROID_API__=21 \
+            -o ff_panel \
+            src/ff_panel.cpp \
+            -llog -landroid -ldl -lpthread -lm
+          echo "[OK] $(file ff_panel)"
+
+      - name: Upload binário
+        uses: actions/upload-artifact@v4
+        with:
+          name: ff_panel_arm64
+          path: ff_panel
+          retention-days: 30
