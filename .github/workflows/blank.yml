@@ -31,7 +31,7 @@ jobs:
             -DANDROID \
             -D__ANDROID_API__=21 \
             -o ff_panel \
-            src/ff_panel.cpp \
+            ff_panel.cpp \
             -llog -landroid -ldl -lpthread -lm
           echo "[OK] $(file ff_panel)"
 
